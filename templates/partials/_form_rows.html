@@ -1,0 +1,9 @@
+<!-- _form_rows.html (in templates/partials directory) -->
+{% for form in forms %}
+<tr>
+    <td>{{ form.order_number }}</td>
+    <td>{{ form.phone }}</td>
+    <td>{{ form.device_type }}</td>
+    <!-- ... other fields ... -->
+</tr>
+{% endfor %}

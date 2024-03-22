@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сервизна програма</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('/static/snowboard.jpg') center/cover no-repeat fixed;
+            background-position: left bottom;
+            color: #fff;
+        }
+
+        .header {
+            padding: 80px 0;
+            background-image: url('/static/trobg_logo.png');
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+            text-align: center;
+        }
+
+        .link-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px auto;
+            max-width: 800px;
+        }
+
+        .link-box {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .link-box:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="header"></div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="link-box text-center" onclick="redirectToForm()">
+                    <h3>Създай сервизен протокол</h3>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="link-box text-center" onclick="redirectToHistory()">
+                    <h3>Устройства в сервиза</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function redirectToForm() {
+            window.location.href = '/form'; // Adjust the URL as needed
+        }
+
+        function redirectToHistory() {
+            window.location.href = '/view-forms'; // Adjust the URL as needed
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

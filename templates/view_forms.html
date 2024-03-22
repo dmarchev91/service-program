@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сервизни поръчки</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+    <style>
+        .btn-info .phone-icon-clicked {
+            color: #28a745; /* Desired color when clicked */
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="container-fluid mt-4">
+    <div class="row align-items-center"> <!-- Align items vertically -->
+        <div class="col-4">
+            <!-- Logo -->
+            <img src="/static/trobg_logo.png" alt="TRO.BG Logo" class="img-fluid" onclick="window.location='/'" style="cursor: pointer; max-width: 200px;">
+        </div>
+
+        <div class="col-4 text-center">
+            <!-- Header Text -->
+            <h2>Сервизни поръчки</h2>
+        </div>
+
+        <div class="col-4 text-right">
+            <!-- Search Bar -->
+            <form action="{{ url_for('search_forms') }}" method="GET" class="form-inline justify-content-end">
+                <input class="form-control mr-2" type="text" placeholder="Търси..." name="query">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="fas fa-search"></i> <!-- FontAwesome search icon -->
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="table-responsive">
+        <table class="table table-striped mt-3">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">№ поръчка</th>
+                    <th scope="col">Телефон на клиента</th>
+                    <th scope="col">Тип у-во</th>
+                    <th scope="col">Модел</th>
+                    <th scope="col">Дата на създаване</th>
+                    <th scope="col">Цена</th>
+                    <th scope="col">Статус</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in forms %}
+                <tr>
+                    <td>{{ form.order_number }}</td>
+                    <td>{{ form.phone }}</td>
+                    <td>{{ form.device_type }}</td>
+                    <td>{{ form.model }}</td>
+                    <td>{{ form.created_date }}</td>
+                    <td>{{ form.offered_price }} лв.</td>
+                    <td>{{ form.status }}</td>
+                    <!-- Existing edit button with reduced right margin -->
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editForm('{{ form._id }}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="{{ 'btn btn-sm btn-danger' if form.status != 'готов за получаване' else 'btn btn-sm btn-info' }}" onclick="updateOrderStatus('{{ form._id }}', '{{ form.phone }}')">
+                            <i class="fas fa-phone {{ 'phone-icon-danger' if form.status != 'готов за получаване' else 'phone-icon-info' }}"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDelete('{{ form._id }}')">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <nav aria-label="Page navigation example" class="mt-3">
+        <ul class="pagination justify-content-center">
+            {% if page > 1 %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('view_forms', page=page-1) }}">Предишна</a></li>
+            {% endif %}
+            <li class="page-item disabled"><a class="page-link">Страница {{ page }} от {{ total_pages }}</a></li>
+            {% if page < total_pages %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('view_forms', page=page+1) }}">Следваща</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function editForm(formId) {
+        // Redirect to the edit form page with the form ID
+        window.location.href = '/edit-form/' + formId;
+    }
+    function confirmDelete(formId) {
+        const confirmed = confirm("Лора, сигурна ли си, че искаш да изтриеш тази сервизна поръчка?");
+        if (confirmed) {
+            window.location.href = `/delete-form/${formId}`;
+        }
+    }
+    function updateOrderStatus(formId) {
+        const confirmed = confirm("Потвърждаваш ли, че клиентът е прозвънян?");
+        if (confirmed) {
+            window.location.href = `/update-order-status/${formId}`;
+        }
+    }
+
+
+
+
+    function callClient(phoneNumber) {
+        // Example function body. Adjust according to your needs.
+        alert('Calling client at ' + phoneNumber);
+        // You might want to integrate with a telephony system or simply copy the phone number to the clipboard.
+        };
+        document.addEventListener("DOMContentLoaded", function() {
+            var phoneButtons = document.querySelectorAll('[id^="phoneButton"]');
+
+            phoneButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var icon = this.querySelector('i');
+                    icon.classList.add('phone-icon-clicked');
+                });
+            });
+        });
+
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+
+    <title>Редактиране на сервизен протокол</title>
+    <style>
+        .header-bg {
+            background-color: #f8f9fa; /* Light gray background */
+        }
+        .header-text {
+            color: #212529; /* Dark text for contrast */
+        }
+        .header-date {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <form id="myForm" action="{{ url_for('edit_form', form_id=form_id) }}" method="POST" class="mt-3" autocomplete="off"> <!-- Update action URL -->
+            {{ form.csrf_token }}
+        <div class="container-fluid header-bg py-3">
+            <div class="row">
+                <div class="col-12 d-flex justify-content-center position-relative">
+                    <h1 class="header-text m-0">Редактирай сервизен протокол</h1>
+                    <h6 class="header-date header-text" id="created_date">Приет за ремонт на: {{ form.created_date.data }}</h6>
+                    {% if form.status.data == "приключен ремонт" %}
+                    <h6 class="header-date header-text" id="additional_date" style="right: 15px; top: 80%;">Приключен ремот на: {{ form.repaired_date.data }}</h6>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+
+            <div class="row mb-3">
+                <!-- Phone Number Input -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-white" id="phone-addon"><i class="fas fa-phone"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="phone" name="phone" placeholder="*Телефонен номер на клиент" aria-label="ClientPhone" aria-describedby="phone-addon"  value="{{ form.phone.data }}" required>
+                    </div>
+                </div>
+                <!-- Model Input -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="model-addon"><i class="fas fa-laptop-medical"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="model" name="model" placeholder="Марка и модел" aria-label="BrandModel" aria-describedby="model-addon" value="{{ form.model.data }}"  required>
+                    </div>
+                </div>
+                <!-- Email Input -->
+
+            </div>
+
+            <div class="row mb-3">
+                <!-- Info Input -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-white" id="info-addon"><i class="fas fa-info"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="info" name="info" placeholder="Информация за повредата" aria-label="FaultInformation" aria-describedby="info-addon" value="{{ form.info.data }}" required >
+                    </div>
+                </div>
+                <!-- Offered Price Input -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-white" id="price-addon"><i class="fas fa-tag"></i></span>
+                        </div>
+                        <input type="number" class="form-control" id="offered_price" name="offered_price" placeholder="Оферирана цена" aria-label="FinalPrice" aria-describedby="price-addon" value="{{ form.offered_price.data }}" required step="0.01">
+                    </div>
+                </div>
+                <!-- Status Dropdown -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text bg-white" for="status"><i class="fas fa-tasks"></i></label>
+                        </div>
+                                                <select id="status" name="status" class="form-control" onchange="showHideAdditionalFields()">
+                            <option value="приет за ремонт" {{ 'selected' if form.status.data == 'приет за ремонт' else '' }}>приет за ремонт</option>
+                            <option value="готов за получаване" {{ 'selected' if form.status.data == 'готов за получаване' else '' }}>готов за получаване</option>
+                                                    <option value="приключен ремонт" {{ 'selected' if form.status.data == 'приключен ремонт' else '' }}>приключен ремонт</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Additional Fields Section -->
+            <div class="row mb-3" id="additionalFields" style="display: none;">
+                <!-- Repair Details Field -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-white" id="additionalField1-addon"><i class="fas fa-tools"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="repair_details" name="repair_details" placeholder="Извършен ремонт...." aria-label="AdditionalField1" aria-describedby="additionalField1-addon" value="{{ form.repair_details.data if form.repair_details.data else '' }}">
+                    </div>
+                </div>
+                <!-- Part Price Field -->
+               <div class="col-md-4">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-white" id="additionalField3-addon"><i class="fas fa-euro-sign"></i></span>
+                        </div>
+                        <input type="number" class="form-control" id="part_price" name="part_price" placeholder="Доставна цена части..." aria-label="AdditionalField3" aria-describedby="additionalField3-addon" value="{{ form.part_price.data if form.part_price.data else '' }}" step="0.01">
+                    </div>
+                </div>
+
+                <!-- Warranty Field or another placeholder if needed -->
+                <!-- Adjust or remove based on your layout needs -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-white" id="additionalField2-addon"><i class="fas fa-plus-circle"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="warranty" name="warranty" placeholder="Гаранционен срок.." aria-label="AdditionalField2" aria-describedby="additionalField2-addon" value="{{ form.warranty.data if form.warranty.data else '' }}">
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row mb-3">
+                <div class="col-12 text-left">
+                    <h4>Налични аксесоари</h4>
+                </div>
+
+
+            <div class="col-4">
+                <div class="form-row">
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="case" name="accessory_case" value="case" {{ 'checked' if accessories.get('accessory_case', False) else '' }}>
+                            <label class="form-check-label" for="case">Кейс</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="bag" name="accessory_bag" value="bag" {{ 'checked' if accessories.get('accessory_bag', False) else '' }}>
+                            <label class="form-check-label" for="bag">Чанта</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="charger" name="accessory_charger" value="charger" {{ 'checked' if accessories.get('accessory_charger', False) else '' }}>
+                            <label class="form-check-label" for="charger">Зарядно</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="sim" name="accessory_sim" value="sim" {{ 'checked' if accessories.get('accessory_sim', False) else '' }}>
+                            <label class="form-check-label" for="sim">Сим</label>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <!-- Other Info Input with Info Icon -->
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <textarea class="form-control" id="other_info" name="other_info" placeholder="Друга информация...." style="height: 3rem; width: 50%;" >{{ form.other_info.data }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-key"></i></span> <!-- Key icon for PIN code -->
+                                </div>
+                                <input type="text" class="form-control" id="pincode" name="pincode" placeholder="PIN" value="{{ form.pincode.data }}" >
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span> <!-- Lock icon for Passcode -->
+                                </div>
+                                <input type="text" class="form-control" id="passcode" name="passcode" placeholder="Парола" value="{{ form.passcode.data }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+            <!-- Print Button -->
+            <div class="row mt-4">
+                <div class="col-sm-12 mb-2 text-left">
+                    <button type="button" id='printButton' class="btn btn-lg" onclick="handlePrint()" style="background-color: ORANGE; color: black;">
+                        <i class="fas fa-print"></i> Принтирай сервизен протокол
+                    </button>
+                </div>
+            </div>
+            <!-- Submit Button -->
+           <div class="row mt-4">
+                <div class="col-sm-6">
+                    <button type="submit" id="submitButton" class="btn btn-primary btn-lg btn-block" >Запази промените</button>
+                </div>
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-secondary btn-lg btn-block" onclick="window.location.href='/view-forms';">Назад</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function showHideAdditionalFields() {
+            var status = document.getElementById('status').value;
+            var additionalFields = document.getElementById('additionalFields');
+            var printButton = document.getElementById('printButton'); // Ensure you have an ID for your print button
+            if (status != 'приет за ремонт') {
+                additionalFields.style.display = 'block';
+                printButton.style.display = 'block'; // Show the print button
+            } else {
+                additionalFields.style.display = 'none';
+                printButton.style.display = 'none'; // Hide the print button
+            }
+        }
+        document.getElementById('submitButton').addEventListener('click', function(event) {
+            var status = document.getElementById('status').value;
+            if (status === 'приключен ремонт') {
+
+                handlePrint(); // Call the print function
+            }
+            // If the condition is not met, the form will submit as usual
+        });
+        function handlePrint() {
+            var status = document.getElementById('status').value;
+            if (status != 'приет за ремонт') {
+                // Construct the URL with query parameters
+                var serviceDescription = encodeURIComponent(document.getElementById('model').value);
+                var price = encodeURIComponent(document.getElementById('offered_price').value);
+                var created_date = encodeURIComponent(document.getElementById('created_date').value);
+                var warranty = encodeURIComponent(document.getElementById('warranty').value); // Example static value, adjust as necessary
+                var repair_details = encodeURIComponent(document.getElementById('repair_details').value);
+
+                var protocolUrl = '/protocol_repaired_device.html?serviceDescription=' + serviceDescription + '&price=' + price + '&warranty=' + warranty + '&repair_details=' + repair_details;
+                window.open(protocolUrl);
+            }
+        }
+
+        // Call this function when the document is loaded to ensure correct field visibility
+        document.addEventListener('DOMContentLoaded', showHideAdditionalFields);
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+

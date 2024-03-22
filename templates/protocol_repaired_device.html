@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Гаранционна Карта</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+        .warranty-card {
+            margin-bottom: 20px;
+        }
+        .table th, .table td {
+            font-weight: bold;
+            border: 2px solid black !important; /* Ensuring bold borders for printing */
+        }
+        .table thead th {
+            border-bottom: 3px solid black !important;
+        }
+        @media print {
+            @page {
+                margin: 0; /* This sets the page margin within the PDF/print output */
+            }
+            body {
+                margin: 15mm 10mm 10mm 10mm; /* Provide adequate margins to avoid clipping content. Adjust as needed. */
+            }
+            .no-print {
+                display: none;
+            }
+            .table th, .table td {
+                border: 2px solid black !important; /* Reiterating for print */
+            }
+            .table thead th {
+                border-bottom: 3px solid black !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+          <div class="row">
+            <div class="col-12">
+                <img src="/static/trobg_logo.png" alt="TRO.BG Logo" class="img-fluid" onclick="window.location='/'" style="cursor: pointer; max-width: 200px; float: center;">
+            </div>
+        </div>
+        <header class="text-center mb-4">
+            <h2>Бионд Тех ООД</h2>
+            <p>София, бул. Ломско шосе 48</p>
+            <p>Тел: 0888188867</p>
+        </header>
+
+        <section class="warranty-card text-center">
+            <h3>Сервизен Протокол</h3>
+            <p id="created_date">Created Date Placeholder</p>
+        </section>
+
+        <section class="service-details mb-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-center">Услуга</th>
+                        <th scope="col" class="text-center">Цена</th>
+                        <th scope="col" class="text-center">Гаранционен Срок</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="serviceDescription" >Service Description Placeholder</td>
+                        <td id="price"class="text-center">Price Placeholder</td>
+                        <td id="warranty" class="text-center">Warranty Period Placeholder</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="warranty-terms">
+            <h5>Гаранционни условия:</h5>
+            <ul>
+                <li>Гаранционният срок започва да тече от датата на издаване на гаранционната карта.</li>
+                <li>Рекламации на закупена стока се приемат в упълномощените сервизи, срещу представяне на настоящата гаранционна карта,попълнена ясно и четливо с модела и серийния номер на изделието, срока на гаранция, подпис на продавача и печат на магазина.</li>
+                <li>Гаранционното обслужване се извършва само когато изделията са в оригинална опаковка и пълна окомплектовка, включително драйвери, кабели, документация и т.н.</li>
+                <li>Гаранционният срок започва да тече от датата на издаване на гаранционната карта.</li>
+                <li>Гаранционният срок започва да тече от датата на издаване на гаранционната карта.</li>
+            </ul>
+            <h5>Изключения от гаранцията:</h5>
+            <ul>
+                <li>Неспазване на указанията за експлоатация, съхранение и транспорт.</li>
+                <li>Повреди, настъпили при транспортиране.</li>
+                <li>Опит за отстраняване на дефекта от неупълномощени лица.</li>
+                <li>Опит за подправяне на гаранционната карта, фабричния номер или представяне на непопълнена гаранционна карта.</li>
+                <li>Повреди, настъпили вследствие на природни бедствия (гръмотевици, наводнения, земетресения, пожари и др.), от токови удари, от попадането на течности и инсекти в изделието и др.</li>
+                <li>Използване на устройствата съвместно с други неизправни или несъвместими модули и устройства.</li>
+            </ul>
+        </section>
+
+        <div class="text-center no-print mt-4">
+            <button class="btn btn-primary" onclick="window.print();">Принтирай</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var serviceDescription = urlParams.get('serviceDescription');
+            var price = urlParams.get('price');
+            var warranty = urlParams.get('warranty');
+            var created_date = urlParams.get('created_date');
+            var repair_details = urlParams.get('repair_details');
+            var currentDate = new Date();
+            var day = String(currentDate.getDate()).padStart(2, '0');
+            var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            var year = currentDate.getFullYear();
+            var formattedDate = day + '.' + month + '.' + year;
+
+            // Assuming you have elements with these IDs in your protocol form
+            document.getElementById('serviceDescription').innerText = serviceDescription + ' ' + repair_details;
+            document.getElementById('price').innerText = price + ' лв.';
+            document.getElementById('warranty').innerText = warranty + ' месеца';
+            document.getElementById('created_date').innerText = "Дата: " + formattedDate;
+         });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

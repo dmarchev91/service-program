@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>Сервизен Протокол</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #000; /* Black text color */
+            margin: 0;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        h1, h2, h3 {
+            color: #000; /* Black header color */
+            font-weight: bold; /* Bold headers */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            width: 45%
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+        }
+        @media print {
+          /* Ensure borders are printed */
+          -webkit-print-color-adjust: exact;
+          color-adjust: exact;
+
+          table {
+            border-collapse: collapse;
+            width: 100%;
+          }
+
+          th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+          }
+
+          th {
+            background-color: #f2f2f2;
+          }
+          .no-print {
+            display: none;
+         }
+
+        }
+        .security-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .security-details {
+            border: 2px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .security-icon {
+            max-height: 225px;
+            margin-left: 20px;
+        }
+
+        .security-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .security-details th, .security-details td {
+            border: 1px solid #ccc;
+            padding: 5px;
+        }
+
+        .security-details th {
+            width: 30%;
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="border: none; text-align: left; vertical-align: top;">
+                    <h3>Бионд Тех ООД</h3>
+                    <p>София, бул. Ломско шосе 48</p>
+                <p>Тел: 0888188867</p>
+                </td>
+                <td style="border: none; text-align: right; vertical-align: top;">
+                    <p>Дата : <span id="created-date"></span></p>
+                                        <p>info@tro.bg</p>
+                </td>
+            </tr>
+        </table>
+        <h3 style="text-align: center">Сервизен Протокол</h3>
+        <hr>
+        <h4>Информация за Клиента</h4>
+        <table>
+            <tr>
+                <th>Телефон</th>
+                <td id="client-phone"><span id="phone"><!-- Phone number will be inserted here --></span><!-- Телефон --></td>
+            </tr>
+        </table>
+
+        <h4>Информация за Устройството</h4>
+        <table>
+            <tr>
+                <th>Тип устройство</th>
+                <td id="device-type"><span id="device_type"><!-- Phone number will be inserted here --></span><!-- Модел --></td>
+            </tr>
+            <tr>
+                <th>Модел</th>
+                <td id="device-model"><span id="model"><!-- Phone number will be inserted here --></span><!-- Модел --></td>
+            </tr>
+            <tr>
+                <th>Описание на проблема</th>
+                <td><span id="info"><!-- Phone number will be inserted here --></span><!-- Описание на Проблема --></td>
+            </tr>
+            <tr>
+                <th>Предложена цена</th>
+                <td><span id="offered_price"></span></td>
+            </tr>
+        </table>
+        <table>
+            <div class="container">
+                <!-- Existing content -->
+
+
+                <div class="accessories-list">
+                    <label>
+                        <input type="checkbox" id="caseCheckbox" disabled> Кейс
+                    </label>
+                    <label>
+                        <input type="checkbox" id="bagCheckbox" disabled> Чанта
+                    </label>
+                    <label>
+                        <input type="checkbox" id="chargerCheckbox" disabled> Зарядно
+                    </label>
+                    <label>
+                        <input type="checkbox" id="simCheckbox" disabled> Сим
+                    </label>
+                    <tr>
+                        <th>Друга информарция</th>
+                        <td><span id="other_info"><!-- Phone number will be inserted here --></span></td>
+                    </tr>
+                </div>
+
+            </div>
+        </table>
+       <div class="security-section">
+            <div class="security-details">
+                <table>
+                    <tr>
+                        <th>PIN</th>
+                        <td><span id="pincode"><!-- PIN will be inserted here --></span></td>
+                    </tr>
+                    <tr>
+                        <th>Парола</th>
+                        <td><span id="passcode"><!-- Password will be inserted here --></span></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="security-icon">
+                <img src="/static/security_icon.jpg" alt="Security Icon" class="img-fluid" style="max-height: 150px; >
+            </div>
+        </div>
+
+        <div class="footer">
+            <button class='no-print' onclick="window.print();">Принтирай</button>
+        </div>
+    </div>
+
+    <script>
+    window.addEventListener('load', function() {
+        var formData = JSON.parse(sessionStorage.getItem('formData'));
+        console.log('Form Data from sessionStorage:', formData);
+        if (formData) {
+            // Populate the data
+            document.getElementById('model').textContent = formData.model || '';
+            document.getElementById('phone').textContent = formData.phone || '';
+            document.getElementById('device_type').textContent = formData.device_type || '';
+            document.getElementById('offered_price').textContent = formData.offered_price + ' лв.'|| '';
+            document.getElementById('other_info').textContent = formData.other_info || '';
+            document.getElementById('info').textContent = formData.info || '';
+            document.getElementById('pincode').textContent = formData.pincode || 'Няма предоставена информация';
+            document.getElementById('passcode').textContent = formData.passcode || 'Няма предоставена информация';
+            document.getElementById('caseCheckbox').checked = formData.accessory_case === 'case';
+            document.getElementById('bagCheckbox').checked = formData.accessory_bag === 'bag';
+            document.getElementById('chargerCheckbox').checked = formData.accessory_charger === 'charger';
+            document.getElementById('simCheckbox').checked = formData.accessory_sim === 'sim';
+        }
+        // Repeat for other fields as needed
+        function getCurrentDate() {
+        const now = new Date();
+        const day = ('0' + now.getDate()).slice(-2);
+        const month = ('0' + (now.getMonth() + 1)).slice(-2);
+        const year = now.getFullYear();
+        return `${day}.${month}.${year}`;
+    }
+
+    // Set the current date to the created-date span
+    document.getElementById('created-date').textContent = getCurrentDate();
+
+    });
+    </script>
+</body>
+</html>

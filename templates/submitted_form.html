@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>Сервизен Протокол</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3, th {
+            color: #000; /* Black text color */
+        }
+        hr {
+            border: none;
+            height: 1px;
+            color: #ccc; /* Line color */
+            background-color: #ccc;
+        }
+        .info-section {
+            margin-bottom: 10px;
+        }
+        .info-label {
+            font-weight: bold;
+            margin-right: 5px;
+            display: inline-block;
+            min-width: 150px;
+        }
+        .info-content {
+            display: inline-block;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+        }
+        @media print {
+            .footer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Бионд Тех ООД</h1>
+        <div class="info-section">
+            <span class="info-label">Адрес:</span>
+            <span class="info-content" id="company-address">София, бул. Ломско шосе 48</span>
+        </div>
+        <div class="info-section">
+            <span class="info-label">Телефон:</span>
+            <span class="info-content" id="company-phone">0888188867</span>
+        </div>
+        <hr>
+
+        <h2>Сервизен Протокол</h2>
+        <h3>Информация за Клиента</h3>
+        <div class="info-section">
+            <span class="info-label">Email address:</span>
+            <span class="info-content" id="client-name"><!-- Email will be inserted here --></span>
+        </div>
+        <div class="info-section">
+            <span class="info-label">Телефон:</span>
+            <span class="info-content" id="client-phone"><span id="phone"><!-- Phone number will be inserted here --></span></span>
+        </div>
+        <hr>
+
+        <h3>Информация за Устройството</h3>
+        <div class="info-section">
+            <span class="info-label">Тип устройство:</span>
+            <span class="info-content" id="device-type"><span id="device_type"><!-- Device type will be inserted here --></span></span>
+        </div>
+        <div class="info-section">
+            <span class="info-label">Модел:</span>
+            <span class="info-content" id="device-model"><span id="model"><!-- Model will be inserted here --></span></span>
+        </div>
+        <div class="info-section">
+            <span class="info-label">Описание на Проблема:</span>
+            <span class="info-content" id="info-"><span id="info"><!-- Problem description will be inserted here --></span></span>
+        </div>
+        <div class="info-section">
+            <span class="info-label">Предложена Цена:</span>
+            <span class="info-content" id="offered_price"><!-- Offered price will be inserted here --></span>
+        </div>
+        <hr>
+
+        <div class="container">
+                <!-- Existing content -->
+
+                <h3>Налични аксесоари</h3>
+                <div class="accessories-list">
+                    <label>
+                        <input type="checkbox" id="caseCheckbox" disabled> Кейс
+                    </label>
+                    <label>
+                        <input type="checkbox" id="bagCheckbox" disabled> Чанта
+                    </label>
+                    <label>
+                        <input type="checkbox" id="chargerCheckbox" disabled> Зарядно
+                    </label>
+                    <label>
+                        <input type="checkbox" id="simCheckbox" disabled> Сим
+                    </label>
+                    <div class="info-section">
+                        <span class="info-label">Друга информация:</span>
+                        <span class="info-content" id="other_info"><!-- Offered price will be inserted here --></span>
+                    </div>
+                </div>
+
+            </div>
+        <hr>
+
+        <h3>Сигурност</h3>
+        <div class="info-section">
+            <span class="info-label">PIN:</span>
+            <span class="info-content" id="pincode"><!-- PIN will be inserted here --></span>
+        </div>
+        <div class="info-section">
+            <span class="info-label">Парола:</span>
+            <span class="info-content" id="passcode"><!-- Password will be inserted here --></span>
+        </div>
+
+        <div class="col-md-4 text-right">
+                <img src="/static/security_icon.jpg" alt="Security Icon" class="img-fluid" style="max-height: 150px;">
+        </div>
+
+        <div class="footer">
+            <button onclick="window.print();">Принтирай</button>
+        </div>
+    </div>
+<script>
+        window.addEventListener('load', function() {
+            var formData = JSON.parse(sessionStorage.getItem('formData'));
+            console.log('Form Data from sessionStorage:', formData);
+            if (formData) {
+                // Populate the data
+                document.getElementById('model').textContent = formData.model || '';
+                document.getElementById('phone').textContent = formData.phone || '';
+                document.getElementById('device_type').textContent = formData.device_type || '';
+                document.getElementById('offered_price').textContent = formData.offered_price + ' лв.'|| '';
+                document.getElementById('other_info').textContent = formData.other_info || '';
+                document.getElementById('info').textContent = formData.info || '';
+                document.getElementById('pincode').textContent = formData.pincode || 'Няма предоставена информация';
+                document.getElementById('passcode').textContent = formData.passcode || 'Няма предоставена информация';
+                // Handle accessories checkboxes
+                document.getElementById('caseCheckbox').checked = formData.accessory_case === 'case';
+                document.getElementById('bagCheckbox').checked = formData.accessory_bag === 'bag';
+                document.getElementById('chargerCheckbox').checked = formData.accessory_charger === 'charger';
+                document.getElementById('simCheckbox').checked = formData.accessory_sim === 'sim';
+            }
+        });
+    </script>
+</body>
+</html>
