@@ -177,7 +177,7 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"><i class="fas fa-key"></i></span> <!-- Key icon for PIN code -->
                                 </div>
-                                <input type="text" class="form-control" id="pincode" name="pincode" placeholder="PIN" value="{{ form.pincode.data }}" >
+                                <input type="number" class="form-control" id="pincode" name="pincode" placeholder="PIN" value="{{ form.pincode.data }}" >
                             </div>
                             <div class="input-group">
                                 <div class="input-group-prepend">
@@ -232,7 +232,7 @@
         });
         function handlePrint() {
             var status = document.getElementById('status').value;
-            if (status != 'приет за ремонт') {
+            if (status == 'приключен ремонт') {
                 // Construct the URL with query parameters
                 var serviceDescription = encodeURIComponent(document.getElementById('model').value);
                 var price = encodeURIComponent(document.getElementById('offered_price').value);

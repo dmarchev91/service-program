@@ -69,15 +69,19 @@
                         <button class="btn btn-warning btn-sm" onclick="editForm('{{ form._id }}')">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="{{ 'btn btn-sm btn-danger' if form.status != 'готов за получаване' else 'btn btn-sm btn-info' }}" onclick="updateOrderStatus('{{ form._id }}', '{{ form.phone }}')">
-                            <i class="fas fa-phone {{ 'phone-icon-danger' if form.status != 'готов за получаване' else 'phone-icon-info' }}"></i>
+                        <button class="btn btn-primary btn-sm" onclick="handlePhoneClick('{{ form.phone }}')">
+                            <i class="fas fa-phone"></i>
+                        </button>
+                         <button class="btn btn-primary btn-sm" onclick="handleMessageClick('{{ form.phone }}')">
+                            <i class="fas fa-comment-alt"></i>
+                        </button>
+                         <button class="{{ 'btn btn-sm ' + ('btn-danger' if form.status != 'готов за получаване' else 'btn-info') }}" onclick="updateOrderStatus('{{ form._id }}', '{{ form.phone }}')">
+                            <i class="fas fa-check {{ 'phone-icon-danger' if form.status != 'готов за получаване' else 'phone-icon-info' }}"></i>
                         </button>
                         <button class="btn btn-danger btn-sm" onclick="confirmDelete('{{ form._id }}')">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </td>
-
-
                 </tr>
                 {% endfor %}
             </tbody>
@@ -117,6 +121,34 @@
             window.location.href = `/update-order-status/${formId}`;
         }
     }
+    function handlePhoneClick(phoneNumber) {
+    // Regex pattern to check for mobile devices
+    var mobileDevicePattern = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+
+    // Check if the user's device matches the mobile pattern
+    if (mobileDevicePattern.test(navigator.userAgent)) {
+        // Mobile device detected, proceed with the call
+        window.location.href = 'tel:' + phoneNumber;
+    } else {
+        // Not a mobile device, display a message
+        alert("Тази опция е достъпна само на мобилни устройства.");
+     }
+    }
+    function handleMessageClick(phoneNumber) {
+        var mobileDevicePattern = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+
+        if (mobileDevicePattern.test(navigator.userAgent)) {
+            var messageTemplate = "Здравейте, Искаме да ви информираме, че ремонтът на вашето устройство е успешно завършен и вече може да бъде взето от нашия сервизен център. Моля, имайте предвид работното ни време: Понеделник - Петък, от 09:00 до 18:00 ч. Благодарим ви, че избрахте нашите услуги. С уважение, Екипът на ТРО.БГ";
+
+            var encodedMessage = encodeURIComponent(messageTemplate);
+
+            window.location.href = 'sms:' + phoneNumber + '?body=' + encodedMessage;
+        } else {
+            alert("Тази опция е достъпна само на мобилни устройства.");
+        }
+    }
+
+
 
 
 

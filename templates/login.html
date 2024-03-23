@@ -1,27 +1,73 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+
+        .form-signin {
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1);
+        }
+
+        .form-signin .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .form-signin .form-control:focus {
+            z-index: 2;
+        }
+
+        .form-signin input[type="username"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+    </style>
 </head>
-<body>
-    <h2>Login</h2>
-    <form method="post">
+<body class="text-center">
+    <form method="post" class="form-signin">
+        <h2 class="mb-4">Вход</h2>
         {{ form.hidden_tag() }}
 
-        <div>
-            <label for="username">Username</label>
-            {{ form.username(class="form-control", placeholder="Enter your username") }}
+        <div class="form-group">
+            <label for="username" class="sr-only">Username</label>
+            {{ form.username(class="form-control", placeholder="Въведи потребителско име", autofocus=true) }}
         </div>
 
-        <div>
-            <label for="password">Password</label>
-            {{ form.password(class="form-control", placeholder="Enter your password") }}
+        <div class="form-group">
+            <label for="password" class="sr-only">Password</label>
+            {{ form.password(class="form-control", placeholder="Въведи парола") }}
         </div>
 
-        <button type="submit">Login</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
     </form>
+
+    <!-- Include Bootstrap JS and its dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
