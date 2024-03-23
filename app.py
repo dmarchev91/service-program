@@ -76,6 +76,7 @@ def submit_form():
 
 @app.route('/view-forms')
 @app.route('/view-forms/<int:page>')
+@login_required
 def view_forms(page=1):
     per_page = 15
 
@@ -100,19 +101,11 @@ def view_forms(page=1):
     total_pages = (total_count + per_page - 1) // per_page
     return render_template('view_forms.html', forms=forms, page=page, total_pages=total_pages)
 
-
+#route for form submitting
 @app.route('/view-forms')
 def form_submitted():
-    return '''
-    <html>
-        <head><title>Form Submitted</title></head>
-        <body>
-            <h1>Form submitted successfully!</h1>
-            <p><a href="/view-forms">View Submitted Forms</a></p>
-        </body>
-    </html>
-    '''
-    redirect(url_for('view_forms'))
+    return redirect(url_for('view_forms'))
+
 
 class MyForm(FlaskForm):
     phone = StringField('Phone', validators=[DataRequired()])
@@ -140,7 +133,7 @@ class LoginForm(FlaskForm):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('form'))
+        return redirect(url_for('landing'))
 
     form = LoginForm()
 
@@ -153,11 +146,12 @@ def login():
             user = User(username)
             login_user(user)
             flash('Logged in successfully', 'success')
-            return redirect(url_for('form'))
+            return redirect(url_for('index'))
         else:
             flash('Invalid username or password', 'error')
 
     return render_template('login.html', form=form)
+
 
 # Route for handling logout
 @app.route('/logout')
@@ -169,6 +163,7 @@ def logout():
 
 # Index route (landing page)
 @app.route('/')
+@login_required
 def index():
     return render_template('landing.html')
 
@@ -187,7 +182,6 @@ def check_if_repaired_date_exist(form_id):
 # Route for form filling
 @app.route('/form', methods=['GET', 'POST'])
 @login_required
-
 def form():
     form = MyForm()
 
@@ -222,7 +216,8 @@ def update_order_status(form_id):
 
     update_data = {
         'status': 'готов за получаване',
-        'status_order_filter' : '2'
+        'status_order_filter' : '2',
+
     }
     mongo.db.forms_collection.update_one({'_id': ObjectId(form_id)}, {'$set': update_data})
     print(update_data)
@@ -279,7 +274,7 @@ def edit_form(form_id):
             print('update data' + str(update_data))
 
             # Check if the status is "completed" and update additional fields
-            if status == 'приключен ремонт' or status == "готов за вземане":
+            if status == 'приключен ремонт' or status == "готов за получаване":
                 print('vytre sym')
                 update_data = {
                     'part_price': request.form.get('part_price'),
