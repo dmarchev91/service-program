@@ -9,28 +9,8 @@ The application requiring interaction with mongodb which also can be provisioned
 
 1. build docker container docker build -t service_program .
 2. run docker container docker run --name service_program -p 5000:5000 service_program
+3. Install mongodb from official repo.
 
 
-Mongo
-test> show dbs
-admin    40.00 KiB
-config   96.00 KiB
-formDB  152.00 KiB
-local    72.00 KiB
-
-formDB> db.forms_collection.findOne()
-{
-  _id: ObjectId('65ed99c5031398aeb943f5b9'),
-  model: 'xioami',
-  phone: 'asd',
-  device_type: 'Телефон',
-  offered_price: '0',
-  created_date: '10/03/24 11:18:23',
-  info: 'asd',
-  status: 'приключен ремонт',
-  order_number: 33,
-  accessories: {
-    accessory_case: false,
-    accessory_bag: false,
-    accessory_charger: false,
-    accessory_sim: false
+Bug report:
+1. If status=="готов за получаване" not updating the additional text field details "part_price","repair_details" and "warranty"
