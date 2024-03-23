@@ -12,5 +12,11 @@ The application requiring interaction with mongodb which also can be provisioned
 3. Install mongodb from official repo.
 
 
-Bug report:
+Bug report: 22/03//24
 1. If status=="готов за получаване" not updating the additional text field details "part_price","repair_details" and "warranty"
+
+
+Bug fixes 23/03/24
+
+1.  If status=="готов за получаване" not updating the additional text field details "part_price","repair_details" and "warranty".
+2.  Login form enabled for all pages.
