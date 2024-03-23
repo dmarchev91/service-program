@@ -20,3 +20,6 @@ Bug fixes 23/03/24
 
 1.  If status=="готов за получаване" not updating the additional text field details "part_price","repair_details" and "warranty".
 2.  Login form enabled for all pages.
+
+New functionallity 23/03/24
+1. Phone call and message initiation on view_forms page, applicable only for mobile devices.
