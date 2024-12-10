@@ -88,6 +88,18 @@
                 <div class="col-md-4">
                     <div class="input-group">
                         <div class="input-group-prepend">
+                            <label class="input-group-text bg-white" for="technician"><i class="fas fa-user"></i></label>
+                        </div>
+                      <select id="technician" name="technician" class="form-control">
+                            <option value="" disabled {% if technician is none or technician == "" %}selected{% endif %}>Изберете техник</option>
+                            <option value="Ники" {% if technician == 'Ники' %}selected{% endif %}>Ники</option>
+                            <option value="Лъчо" {% if technician == 'Лъчо' %}selected{% endif %}>Лъчо</option>
+                      </select>
+
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
                             <label class="input-group-text bg-white" for="status"><i class="fas fa-tasks"></i></label>
                         </div>
                                                 <select id="status" name="status" class="form-control" onchange="showHideAdditionalFields()">
@@ -96,6 +108,7 @@
                                                     <option value="приключен ремонт" {{ 'selected' if form.status.data == 'приключен ремонт' else '' }}>приключен ремонт</option>
                         </select>
                     </div>
+
                 </div>
             </div>
             <!-- Additional Fields Section -->
@@ -115,7 +128,12 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text bg-white" id="additionalField3-addon"><i class="fas fa-euro-sign"></i></span>
                         </div>
-                        <input type="number" class="form-control" id="part_price" name="part_price" placeholder="Доставна цена части..." aria-label="AdditionalField3" aria-describedby="additionalField3-addon" value="{{ form.part_price.data if form.part_price.data else '' }}" step="0.01">
+                        <input type="number" class="form-control" id="part_price" name="part_price"
+                               placeholder="Доставна цена части..." aria-label="AdditionalField3"
+                               aria-describedby="additionalField3-addon"
+                               value="{{ form.part_price.data if form.part_price.data else '' }}"
+                               step="0.01" required min="0"
+                               pattern="\d+(\.\d{1,2})?" title="Enter a valid price, e.g. 10.00">
                     </div>
                 </div>
 
@@ -210,34 +228,66 @@
     </div>
 
     <script>
+        // Show or hide additional fields and print button based on status
         function showHideAdditionalFields() {
             var status = document.getElementById('status').value;
             var additionalFields = document.getElementById('additionalFields');
-            var printButton = document.getElementById('printButton'); // Ensure you have an ID for your print button
+            var printButton = document.getElementById('printButton');
+            var technicianDropdown = document.getElementById('technician');
+
+            // Show or hide the additional fields and print button
             if (status != 'приет за ремонт') {
                 additionalFields.style.display = 'block';
-                printButton.style.display = 'block'; // Show the print button
+                printButton.style.display = 'block';
             } else {
                 additionalFields.style.display = 'none';
-                printButton.style.display = 'none'; // Hide the print button
+                printButton.style.display = 'none';
+            }
+
+            // Make the technician dropdown required if status is 'приключен ремонт'
+            if (status === 'приключен ремонт') {
+                technicianDropdown.required = true;
+            } else {
+                technicianDropdown.required = false;
             }
         }
-        document.getElementById('submitButton').addEventListener('click', function(event) {
-            var status = document.getElementById('status').value;
-            if (status === 'приключен ремонт') {
 
+        // Handle form submission and validation
+        document.getElementById('submitButton').addEventListener('click', function(event) {
+            var partPriceField = document.getElementById('part_price');
+            var partPrice = partPriceField.value;
+            var status = document.getElementById('status').value;
+            var technicianDropdown = document.getElementById('technician');
+
+            // Check if part_price is valid and not empty
+            if (!partPrice || isNaN(partPrice) || parseFloat(partPrice) <= 0) {
+                alert('Моля, въведете валидна доставна цена части.');
+                event.preventDefault(); // Prevent form submission
+                return; // Stop further execution
+            }
+
+            // Ensure technician is selected when status is 'приключен ремонт'
+            if (status === 'приключен ремонт' && (!technicianDropdown.value || technicianDropdown.value === '')) {
+                alert('Моля, изберете техник за приключен ремонт.');
+                event.preventDefault(); // Prevent form submission
+                return; // Stop further execution
+            }
+
+            // If status is 'приключен ремонт' and all conditions are met, call handlePrint
+            if (status === 'приключен ремонт') {
                 handlePrint(); // Call the print function
             }
-            // If the condition is not met, the form will submit as usual
         });
+
+        // Handle print functionality
         function handlePrint() {
             var status = document.getElementById('status').value;
-            if (status == 'приключен ремонт') {
+            if (status === 'приключен ремонт') {
                 // Construct the URL with query parameters
                 var serviceDescription = encodeURIComponent(document.getElementById('model').value);
                 var price = encodeURIComponent(document.getElementById('offered_price').value);
                 var created_date = encodeURIComponent(document.getElementById('created_date').value);
-                var warranty = encodeURIComponent(document.getElementById('warranty').value); // Example static value, adjust as necessary
+                var warranty = encodeURIComponent(document.getElementById('warranty').value);
                 var repair_details = encodeURIComponent(document.getElementById('repair_details').value);
 
                 var protocolUrl = '/protocol_repaired_device.html?serviceDescription=' + serviceDescription + '&price=' + price + '&warranty=' + warranty + '&repair_details=' + repair_details;
@@ -245,10 +295,10 @@
             }
         }
 
-        // Call this function when the document is loaded to ensure correct field visibility
+        // Initialize the visibility of additional fields and print button based on current form status
         document.addEventListener('DOMContentLoaded', showHideAdditionalFields);
-
     </script>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
