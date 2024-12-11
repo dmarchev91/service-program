@@ -94,6 +94,13 @@
                             <option value="" disabled {% if technician is none or technician == "" %}selected{% endif %}>Изберете техник</option>
                             <option value="Ники" {% if technician == 'Ники' %}selected{% endif %}>Ники</option>
                             <option value="Лъчо" {% if technician == 'Лъчо' %}selected{% endif %}>Лъчо</option>
+                            <option value="Десо" {% if technician == 'Десо' %}selected{% endif %}>Десо</option>
+                            <option value="Митко Гарата" {% if technician == 'Митко Гарата' %}selected{% endif %}>Митко Гарата</option>
+                            <option value="Митко PS" {% if technician == 'Митко PS' %}selected{% endif %}>Митко PS</option>
+                            <option value="Боби" {% if technician == 'Боби' %}selected{% endif %}>Боби</option>
+                            <option value="Impulse" {% if technician == 'Impulse' %}selected{% endif %}>Impulse</option>
+                            <option value="Други" {% if technician == 'Други' %}selected{% endif %}>Други</option>
+
                       </select>
 
                     </div>
@@ -132,7 +139,7 @@
                                placeholder="Доставна цена части..." aria-label="AdditionalField3"
                                aria-describedby="additionalField3-addon"
                                value="{{ form.part_price.data if form.part_price.data else '' }}"
-                               step="0.01" required min="0"
+                               step="0.00" required min="0"
                                pattern="\d+(\.\d{1,2})?" title="Enter a valid price, e.g. 10.00">
                     </div>
                 </div>
