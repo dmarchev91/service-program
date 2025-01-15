@@ -217,6 +217,7 @@
             <!-- Print Button -->
             <div class="row mt-4">
                 <div class="col-sm-12 mb-2 text-left">
+                    <input type="hidden" id="order_number" name="order_number" value="{{ order_number }}">
                     <button type="button" id='printButton' class="btn btn-lg" onclick="handlePrint()" style="background-color: ORANGE; color: black;">
                         <i class="fas fa-print"></i> Принтирай сервизен протокол
                     </button>
@@ -286,21 +287,30 @@
             }
         });
 
-        // Handle print functionality
         function handlePrint() {
             var status = document.getElementById('status').value;
             if (status === 'приключен ремонт') {
-                // Construct the URL with query parameters
+                var orderNumber = document.getElementById('order_number').value; // Fetch order number
                 var serviceDescription = encodeURIComponent(document.getElementById('model').value);
                 var price = encodeURIComponent(document.getElementById('offered_price').value);
-                var created_date = encodeURIComponent(document.getElementById('created_date').value);
                 var warranty = encodeURIComponent(document.getElementById('warranty').value);
-                var repair_details = encodeURIComponent(document.getElementById('repair_details').value);
-
-                var protocolUrl = '/protocol_repaired_device.html?serviceDescription=' + serviceDescription + '&price=' + price + '&warranty=' + warranty + '&repair_details=' + repair_details;
-                window.open(protocolUrl);
+                var repairDetails = encodeURIComponent(document.getElementById('repair_details').value);
+        
+                // Validate order number
+                if (!orderNumber) {
+                    alert("Номерът на поръчката не е валиден.");
+                    return;
+                }
+        
+                var protocolUrl = `/protocol_repaired_device/${orderNumber}?serviceDescription=${serviceDescription}&price=${price}&warranty=${warranty}&repairDetails=${repairDetails}`;
+                window.open(protocolUrl, "_blank");
             }
         }
+        
+        
+        
+        
+        
 
         // Initialize the visibility of additional fields and print button based on current form status
         document.addEventListener('DOMContentLoaded', showHideAdditionalFields);

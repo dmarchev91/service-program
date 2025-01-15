@@ -14,8 +14,8 @@ from wtforms import FloatField
 from wtforms.validators import DataRequired, NumberRange
 
 
-mongo_uri = 'mongodb://mongodb:27017/formDB'
-#mongo_uri = 'mongodb://172.18.0.2:27017/formDB'
+#mongo_uri = 'mongodb://mongodb:27017/formDB' # DOCKER
+mongo_uri = 'mongodb://172.18.0.2:27017/formDB' # that's for local test
 # Try connecting to MongoDB, with retries, shtoto Lora reve che ne vinagi trygva.
 for i in range(10):  # Retry 10 times
     try:
@@ -34,11 +34,35 @@ else:
 
 app = Flask(__name__,static_folder='static', template_folder='templates')
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure secret key
-app.config['MONGO_URI'] = 'mongodb://mongodb:27017/formDB'  # Update with your MongoDB connection URI
-#app.config['MONGO_URI'] = 'mongodb://172.18.0.2:27017/formDB'  # Update with your MongoDB connection URI
+#app.config['MONGO_URI'] = 'mongodb://mongodb:27017/formDB'  #  # DOCKER
+app.config['MONGO_URI'] = 'mongodb://172.18.0.2:27017/formDB'  #  Local test
 mongo = PyMongo(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+
+
+
+# Uncomment to convert the create_date field to a datetime object!!!
+# for document in mongo.db.forms_collection.find({"created_date": {"$exists": True}}):
+#     created_date_str = document.get("created_date")  # e.g., '23/03/24'
+
+#     try:
+#         # Convert 'DD/MM/YY' to ISODate
+#         created_date_iso = datetime.strptime(created_date_str, "%d/%m/%y")
+
+#         # Update the document with ISODate
+#         mongo.db.forms_collection.update_one(
+#             {"_id": document["_id"]},  # Match document by its _id
+#             {"$set": {"created_date": created_date_iso}}
+#         )
+#         print(f"Updated document with _id: {document['_id']}")
+#     except Exception as e:
+#         print(f"Error updating document with _id: {document['_id']}: {e}")
+
+# print("Date conversion complete.")
+
+
 
 
 class User(UserMixin):
@@ -49,16 +73,35 @@ class User(UserMixin):
 def load_user(user_id):
     return User(user_id)
 
-# route for protocol template page
-@app.route('/protocol_template.html')
-def protocol_template():
-    return render_template('protocol_template.html')
-
 # route for protocol repaired device template page
-@app.route('/protocol_repaired_device.html')
-def protocol_repaired_device():
-    return render_template('protocol_repaired_device.html')
+@app.route('/protocol_repaired_device/<order_number>')
+def protocol_repaired_device(order_number):
+    # Fetch the document by order_number
+    form_data = mongo.db.forms_collection.find_one({"order_number": int(order_number)})
 
+    if not form_data:
+        return "Order not found", 404
+
+    # Pass the data to the template
+    return render_template('protocol_repaired_device.html', form_data=form_data)
+
+
+@app.route('/protocol_template/<order_number>')
+def protocol_template(order_number):
+    print(f"Fetching protocol for order_number: {order_number}")
+    # Fetch form data by order_number
+    form_data = mongo.db.forms_collection.find_one({"order_number": int(order_number)})
+    print(f'this is form data : {form_data}')
+    if not form_data:
+        return "Order not found", 404
+    # Pass the data to the template
+    return render_template('protocol_template.html', form_data=form_data, order_number=order_number)
+
+
+
+
+
+# app route for submitting the form
 @app.route('/submit-form', methods=['POST'])
 def submit_form():
     if request.method == 'POST':
@@ -69,7 +112,17 @@ def submit_form():
         checkbox_names = ['accessory_case', 'accessory_bag', 'accessory_charger', 'accessory_sim']  # Example names
         # Extract checkbox values and set to True if checked, False if not
         accessories = {checkbox_name: bool(request.form.get(checkbox_name)) for checkbox_name in checkbox_names}
-
+        
+        last_order = mongo.db.forms_collection.find_one(sort=[("order_number", -1)])
+        # Check if the 'order_number' field exists in the last_order and assign next_order_number
+        if last_order and 'order_number' in last_order:
+            next_order_number = last_order['order_number'] + 1
+        else:
+            next_order_number = 1
+        print(next_order_number)
+        # Add the order number to form_data
+        #form_data['order_number'] = next_order_number
+        # Insert data into MongoDB (replace 'forms_collection' with your collection name)
         form_data = {
             'model': request.form.get('model'),
             'phone': request.form.get('phone'),
@@ -81,44 +134,41 @@ def submit_form():
             'pincode':request.form.get('pincode'),
             'passcode': request.form.get('passcode'),
             'other_info': request.form.get('other_info'),
-            'accessories': accessories
+            'accessories': accessories,
+            'order_number': next_order_number
 
             # ... include all other form fields here ...
         }
-        last_order = mongo.db.forms_collection.find_one(sort=[("order_number", -1)])
-        # Check if the 'order_number' field exists in the last_order and assign next_order_number
-        if last_order and 'order_number' in last_order:
-            next_order_number = last_order['order_number'] + 1
-        else:
-            next_order_number = 1
-        # Add the order number to form_data
-        form_data['order_number'] = next_order_number
-        # Insert data into MongoDB (replace 'forms_collection' with your collection name)
-        mongo.db.forms_collection.insert_one(form_data)
-
-        flash('Form submitted successfully!')
-        return redirect(url_for('form_submitted'))  # Redirect to a confirmation page
+        
+        try:
+            result = mongo.db.forms_collection.insert_one(form_data)
+            form_id = str(result.inserted_id)
+            flash('Form submitted successfully!')
+            return redirect(url_for('protocol_template', form_id=form_id, order_number=next_order_number))
+        except Exception as e:
+            flash(f"An error occurred: {str(e)}")
+            return redirect(url_for('submit_form'))
 
 
+
+# route for the view forms
 @app.route('/view-forms')
 @app.route('/view-forms/<int:page>')
 @login_required
 def view_forms(page=1):
     per_page = 15
-    status_filter = request.args.get('status', '')  # Get the status filter from query parameters
+    status_filter = request.args.get('status', '')
 
-    # MongoDB query with conditional filtering by status
     query = {}
     if status_filter:
-        query['status'] = status_filter
+        query['status'] = {'$regex': f'^{status_filter}$', '$options': 'i'}
 
-    # MongoDB aggregation pipeline
     pipeline = [
-        {'$match': query},  # Apply the status filter
+        {'$match': query},
         {
             '$sort': {
-                'status_order_filter': 1,  # Sort by status_order_filter
-                'created_date': 1  # Then sort by created_date in descending order
+                'status_order_filter': 1,
+                'order_number': -1
             }
         },
         {'$skip': (page - 1) * per_page},
@@ -126,11 +176,11 @@ def view_forms(page=1):
     ]
 
     forms = list(mongo.db.forms_collection.aggregate(pipeline))
+    
     total_count = mongo.db.forms_collection.count_documents(query)
     total_pages = (total_count + per_page - 1) // per_page
 
     return render_template('view_forms.html', forms=forms, page=page, total_pages=total_pages, status_filter=status_filter)
-
 
 
 #route for form submitting
@@ -140,7 +190,6 @@ def form_submitted():
 
 
 class MyForm(FlaskForm):
-
 
     phone = StringField('Phone', validators=[DataRequired()])
     model = StringField('Model', validators=[DataRequired()])
@@ -160,6 +209,9 @@ class MyForm(FlaskForm):
     repaired_date = StringField('repaired_date')
     status_order_filter = StringField('status_order_filter')
     technician = StringField('technician')
+    order_number = StringField('order_number')
+    
+    
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -208,10 +260,8 @@ def check_if_repaired_date_exist(form_id):
 
     # Search for the document
     form_document = mongo.db.forms_collection.find_one({'_id': form_id})
-
     # Retrieve the 'repaired_date' field
     repaired_date = form_document.get('repaired_date') if form_document else None
-
     return repaired_date
 
 # Route for form filling
@@ -263,6 +313,7 @@ def edit_form(form_id):
     form_data = mongo.db.forms_collection.find_one({'_id': ObjectId(form_id)})
 
     if form_data:
+        order_number = form_data.get('order_number')
         technician = form_data.get('technician', '')
         # Initialize the form without passing obj=form_data
         form = MyForm()
@@ -360,7 +411,7 @@ def edit_form(form_id):
             flash('Form updated successfully!')
             return redirect(url_for('view_forms'))
 
-        return render_template('edit_form.html', form=form, technician=technician,form_id=form_id,accessories=accessories)
+        return render_template('edit_form.html', form=form, technician=technician,form_id=form_id,accessories=accessories, order_number=order_number)
     else:
         flash('Form not found!')
         return redirect(url_for('view_forms'))
@@ -378,12 +429,11 @@ def search_forms():
     page = request.args.get('page', 1, type=int)
     per_page = 15
     search_query = {"$or": [
-        {"order_number": {"$regex": query, "$options": "i"}},
+        {"$expr": {"$regexMatch": {"input": {"$toString": "$order_number"}, "regex": query, "options": "i"}}},
         {"phone": {"$regex": query, "$options": "i"}},
-        {"device_type": {"$regex": query, "$options": "i"}},
         {"model": {"$regex": query, "$options": "i"}},
         {"offered_price": {"$regex": query, "$options": "i"}},
-        {"status": {"$regex": query, "$options": "i"}},
+        {"status": {"$regex": query, "$options": "i"}}  
         # Add other fields you want to search by
     ]}
     total_count = mongo.db.forms_collection.count_documents(search_query)

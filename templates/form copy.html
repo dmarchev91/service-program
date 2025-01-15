@@ -180,19 +180,17 @@
 <script>
     document.getElementById('myForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the default form submission action
-    
+
         var formData = new FormData(this);
-    
+
         // Use fetch() to submit the form data asynchronously
         fetch('/submit-form', {
             method: 'POST',
             body: formData
         }).then(response => {
             if (response.redirected) {
-                // Open the protocol template page in a new tab
-                window.open(response.url, '_blank');
-                // Redirect to the view-forms page in the current tab
-                window.location.href = '/view-forms';
+                // Redirect to the protocol template page
+                window.location.href = response.url;
             } else {
                 console.error('Form submission failed');
                 alert('An error occurred during submission.');
@@ -202,7 +200,11 @@
             alert('Error occurred. Please try again.');
         });
     });
-    
 </script>
 
 </html>
+
+
+table {
+    width: 100%;
+    word-wrap: break-word;
