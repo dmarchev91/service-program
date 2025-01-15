@@ -14,8 +14,8 @@ from wtforms import FloatField
 from wtforms.validators import DataRequired, NumberRange
 
 
-#mongo_uri = 'mongodb://mongodb:27017/formDB' # DOCKER
-mongo_uri = 'mongodb://172.18.0.2:27017/formDB' # that's for local test
+mongo_uri = 'mongodb://mongodb:27017/formDB' # DOCKER
+#mongo_uri = 'mongodb://172.18.0.2:27017/formDB' # that's for local test
 # Try connecting to MongoDB, with retries, shtoto Lora reve che ne vinagi trygva.
 for i in range(10):  # Retry 10 times
     try:
@@ -34,8 +34,8 @@ else:
 
 app = Flask(__name__,static_folder='static', template_folder='templates')
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure secret key
-#app.config['MONGO_URI'] = 'mongodb://mongodb:27017/formDB'  #  # DOCKER
-app.config['MONGO_URI'] = 'mongodb://172.18.0.2:27017/formDB'  #  Local test
+app.config['MONGO_URI'] = 'mongodb://mongodb:27017/formDB'  #  # DOCKER
+#app.config['MONGO_URI'] = 'mongodb://172.18.0.2:27017/formDB'  #  Local test
 mongo = PyMongo(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
